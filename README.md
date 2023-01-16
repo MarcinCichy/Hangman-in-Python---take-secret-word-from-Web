@@ -1,3 +1,5 @@
 # Hangman in Python
 
-Simple Hangman with simple animation ;)
+Hangman game with ASCII fun animation ;)
+
+Have a fun :-)
