@@ -11,9 +11,9 @@ def clear_screen():
         It was copied from internet,  I will find out how it works in future (_=system is unknow for me) :)"""
 
     if name == "nt":
-        _=system('cls')
+        _ = system('cls')
     else:
-        _=system('clear')
+        _ = system('clear')
 
 def start_screen():
     """ Show start screen. Use pyfigled and termcolor modules"""
@@ -315,11 +315,12 @@ def end_game(wrong_answer):
     start_screen()
     answer = input(colored("       Do You want play again [Y]es/[N]o ? ", "green"))
     # print(answer)
-    if answer == "n":
+    if answer.lower() == "n":
         goodbye()
         
     else:
         main_game()
+
 
 def game_board(choosen_letters,hidden_word,wrong_answer):
     """ Function shows the game board with all necessary elements """
@@ -361,6 +362,7 @@ def main_game():
         game_board(choosen_letters,hidden_word,wrong_answer)
     time.sleep(2)
     end_game(wrong_answer)
+
 
 main_game()
 time.sleep(2)
