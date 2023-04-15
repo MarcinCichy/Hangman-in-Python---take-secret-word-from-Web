@@ -359,7 +359,7 @@ def main_game():
                 if letter == drawn_word[i]:
                     hidden_word[i] = letter
                 
-        game_board(choosen_letters,hidden_word,wrong_answer)
+        game_board(choosen_letters, hidden_word, wrong_answer)
     time.sleep(2)
     end_game(wrong_answer)
 
