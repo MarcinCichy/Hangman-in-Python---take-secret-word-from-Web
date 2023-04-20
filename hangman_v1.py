@@ -284,6 +284,8 @@ def goodbye():
     start_screen()
     f = Figlet(font ="standard")
     print(colored(f.renderText('GOODBYE'), "magenta"))
+    time.sleep(3)
+    return
 
 def end_game(wrong_answer):
     """The function shows the end screen and allows to choose whether the Player will play again or not """
@@ -312,17 +314,25 @@ def end_game(wrong_answer):
                 time.sleep(0.15)
     time.sleep(2)
     clear_screen()
-    start_screen()
-    answer = input(colored("       Do You want play again [Y]es/[N]o ? ", "green"))
+    answer = ''
     # print(answer)
-    if answer.lower() == "n":
-        goodbye()
-        
-    else:
-        main_game()
+    while answer.lower != "n" or answer.lower() != "y":
+        clear_screen()
+        start_screen()
+        answer = input(colored("       Do You want play again [Y]es/[N]o ? ", "green"))
+        if answer.lower() == "n":
+            goodbye()
+            return
+
+        elif answer.lower() == "y":
+            main_game()
 
 
-def game_board(choosen_letters,hidden_word,wrong_answer):
+def number_of_players():
+    pass
+
+
+def game_board(choosen_letters, hidden_word, wrong_answer):
     """ Function shows the game board with all necessary elements """
 
     clear_screen()
@@ -333,7 +343,7 @@ def game_board(choosen_letters,hidden_word,wrong_answer):
     f = Figlet(font ="standard")
     print (colored(f.renderText(hidden_word), "yellow"))  
     print_gallows_and_hangman(wrong_answer)
-    print(" The letters You have already selected: ",choosen_letters[:])
+    print(" The letters You have already selected: ", choosen_letters[:])
     
 def main_game():
     clear_screen()    
