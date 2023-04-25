@@ -15,6 +15,7 @@ def clear_screen():
     else:
         _ = system('clear')
 
+
 def start_screen():
     """ Show start screen. Use pyfigled and termcolor modules"""
 
@@ -24,6 +25,7 @@ def start_screen():
     f = Figlet(font ="digital")
     print(colored(f.renderText("       Don't get hunged"), "red"))
     time.sleep(2)
+
 
 def get_letter():
     """ Get a letter from Player """
@@ -38,20 +40,37 @@ def get_letter():
     else:
         return user_letter.lower()
 
-def take_word():
+
+def get_word():
+    """ Get a word from Player 2 """
+
+    word = input(colored("Enter the word for the other player to guess: ", "yellow"))
+    while not word.isalpha() or len(word) < 3:
+        sys.stdout.write("\033[F")
+        sys.stdout.write('\033[2K\033[1G')
+        print("\a")
+        word = input(colored(
+            "Invalid input! The word should only contain letters and be at least 3 characters long. Try again: ",
+            "yellow"))
+    else:
+        return word.lower()
+
+
+def take_word(num_of_players):
     """ Takes a random word from the list and hides it """
 
-    pair =[]                                                    # Empty list to use it later
+    pair = []                                                    # Empty list to use it later
     words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
     word = r.choice(words)  # Random word from the list
-    pair.append(word)       # Add the word to the list 'pair'
-    hidden_word = ["_" for i in word]                       # List comprehension -> is beautiful !!!! -> change all characters with '_'
+    pair.append(word)  # Add the word to the list 'pair'
+    hidden_word = ["_" for i in word]        # List comprehension -> is beautiful !!!! -> change all characters with '_'
     # It was before list comprehension -> bleeee ;)
     # for i in range(len(word)):
     #      hidden_word = hidden_word.replace(hidden_word[i],"_")
     pair.append(hidden_word)  # Add the hidden_word to the list 'pair'
-    return pair               # Function can return only one parametr, so it return the list 'pair'
-    
+    return pair               # Function can return only one parameter, so it return the list 'pair'
+
+
 def print_gallows_and_hangman(counter):
     """ Prints gallows and hangman in ASCI code """
 
@@ -171,6 +190,7 @@ def print_gallows_and_hangman(counter):
       )
     print(colored(gallows[counter], "magenta"))
 
+
 def hanged(counter):
     """This is not a happy end, the game is over and Player is dead """
 
@@ -247,6 +267,7 @@ def hanged(counter):
     )
     print(colored(dangle[counter], "magenta"))
 
+
 def live(counter):
     """The Player is  alive and can play again :))) """
 
@@ -277,6 +298,21 @@ def live(counter):
     )
     print(colored(happy[counter], "magenta"))
 
+
+def get_player_names():
+    """Get player names from users"""
+
+    player1_name = input(colored("Enter the name of the first player: ", "yellow"))
+    player2_name = input(colored("Enter the name of the second player: ", "yellow"))
+
+    return player1_name, player2_name
+
+def get_word(player_name):
+    """Get word from player"""
+
+    return input(colored(f"{player_name}, enter a word to guess: ", "yellow"))
+
+
 def goodbye():
     """Shows goodbye screen"""
 
@@ -286,6 +322,7 @@ def goodbye():
     print(colored(f.renderText('GOODBYE'), "magenta"))
     time.sleep(3)
     return
+
 
 def end_game(wrong_answer):
     """The function shows the end screen and allows to choose whether the Player will play again or not """
@@ -328,36 +365,58 @@ def end_game(wrong_answer):
             main_game()
 
 
-def number_of_players():
-    pass
-
-
-def game_board(choosen_letters, hidden_word, wrong_answer):
+# def num_of_players_screen():
+#     """Shows screen with question about numer of players"""
+#
+#     clear_screen()
+#     start_screen()
+#     f = Figlet(font ="digital")
+#     print(colored(f.renderText('Choose number of players:'), "magenta"))
+#     print(colored(f.renderText('1. Player'), "green"))
+#     print(colored(f.renderText('2. Players'), "green"))
+#     time.sleep(3)
+#     return
+#
+#
+def game_board(choosen_letters, hidden_word, wrong_answer, player_names):
     """ Function shows the game board with all necessary elements """
 
     clear_screen()
     f = Figlet(font ="standard")
     print(colored(f.renderText("HANGMAN"), "green"))
     f = Figlet(font ="digital")
-    print(colored(f.renderText("       Don't get hunged"), "red"))
-    f = Figlet(font ="standard")
-    print (colored(f.renderText(hidden_word), "yellow"))  
+    if player_names is None:
+        print(colored(f.renderText("       Don't get hunged"), "red"))
+    else:
+        print(colored(f.renderText(f"       {player_names[1]}, guess the word"), "red"))
+    print (colored(f.renderText(hidden_word), "yellow"))
     print_gallows_and_hangman(wrong_answer)
     print(" The letters You have already selected: ", choosen_letters[:])
-    
+
+
 def main_game():
     clear_screen()    
     start_screen()
-    taken_word = take_word()
+    player_names = None
+    player_mode = input(colored("Choose the game mode: [1] - one player, [2] - two players: ", "yellow"))
+    if player_mode == "2":
+        player_names = get_player_names()
+
+    taken_word = []
+    if player_names is not None:
+        taken_word.append(get_word(player_names[0]).lower())
+    else:
+        words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
+        taken_word.append(r.choice(words))
     drawn_word = list(taken_word[0])
-    hidden_word = taken_word[1]
+    hidden_word = ["_" for i in drawn_word]
     choosen_letters = []
     wrong_answer = 0
 
     # The while loop works as long as the hidden word differs from the drawn word and as long as the number of invalid letters is below 7.
     while wrong_answer != 7 and hidden_word != drawn_word:          
             
-        game_board(choosen_letters,hidden_word,wrong_answer)
+        game_board(choosen_letters,hidden_word,wrong_answer, player_names)
         letter = get_letter()
         choosen_letters.append(letter)
 
@@ -365,11 +424,11 @@ def main_game():
             wrong_answer += 1
             print("\a")
         else:
-            for i in range (len(drawn_word)):
+            for i in range(len(drawn_word)):
                 if letter == drawn_word[i]:
                     hidden_word[i] = letter
                 
-        game_board(choosen_letters, hidden_word, wrong_answer)
+        game_board(choosen_letters, hidden_word, wrong_answer, player_names)
     time.sleep(2)
     end_game(wrong_answer)
 
