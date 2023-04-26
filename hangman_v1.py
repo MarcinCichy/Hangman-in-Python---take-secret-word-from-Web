@@ -307,7 +307,8 @@ def get_player_names():
 
     return player1_name, player2_name
 
-def get_word(player_name):
+
+def get_word_from_first_player(player_name):
     """Get word from player"""
 
     return input(colored(f"{player_name}, enter a word to guess: ", "yellow"))
@@ -329,55 +330,41 @@ def end_game(wrong_answer):
     
     if wrong_answer == 7:
         for i in range(10):
-            for i in range (0,5):
+            for j in range(0, 5):
                 clear_screen()
-                f = Figlet(font ="standard")
+                f = Figlet(font="standard")
                 print(colored(f.renderText("HANGMAN"), "green"))
-                f = Figlet(font ="digital")
+                f = Figlet(font="digital")
                 print(colored(f.renderText("     YOU HAVE LOST"), "red"))
                 print(colored(f.renderText("     AND YOU DANGLE"), "red"))
-                hanged(i)                                                   
+                hanged(j)
                 time.sleep(0.15)
     else:
         for i in range(10):
-            for i in range (0,2):
+            for j in range(0, 2):
                 clear_screen()
-                f = Figlet(font ="standard")
+                f = Figlet(font="standard")
                 print(colored(f.renderText("HANGMAN"), "green"))
                 print(colored(f.renderText("     YOU ARE"), "red"))
                 print(colored(f.renderText("STILL ALIVE"), "red"))
-                live(i)                                                     
+                live(j)
                 print(colored(f.renderText("GERONIMO !"), "blue"))
                 time.sleep(0.15)
     time.sleep(2)
     clear_screen()
     answer = ''
     # print(answer)
-    while answer.lower != "n" or answer.lower() != "y":
+    while answer.lower not in ["n", "y"]:
         clear_screen()
         start_screen()
         answer = input(colored("       Do You want play again [Y]es/[N]o ? ", "green"))
         if answer.lower() == "n":
             goodbye()
             return
-
         elif answer.lower() == "y":
             main_game()
 
 
-# def num_of_players_screen():
-#     """Shows screen with question about numer of players"""
-#
-#     clear_screen()
-#     start_screen()
-#     f = Figlet(font ="digital")
-#     print(colored(f.renderText('Choose number of players:'), "magenta"))
-#     print(colored(f.renderText('1. Player'), "green"))
-#     print(colored(f.renderText('2. Players'), "green"))
-#     time.sleep(3)
-#     return
-#
-#
 def game_board(choosen_letters, hidden_word, wrong_answer, player_names):
     """ Function shows the game board with all necessary elements """
 
@@ -389,22 +376,36 @@ def game_board(choosen_letters, hidden_word, wrong_answer, player_names):
         print(colored(f.renderText("       Don't get hunged"), "red"))
     else:
         print(colored(f.renderText(f"       {player_names[1]}, guess the word"), "red"))
-    print (colored(f.renderText(hidden_word), "yellow"))
+    f = Figlet(font="standard")
+    print(colored(f.renderText(hidden_word), "yellow"))
     print_gallows_and_hangman(wrong_answer)
     print(" The letters You have already selected: ", choosen_letters[:])
 
 
-def main_game():
-    clear_screen()    
+def show_selecting_numbers_of_players():
+    clear_screen()
     start_screen()
+    f = Figlet(font="digital")
+    print(colored(f.renderText('Choose number of players:'), "magenta"))
+    print(colored(f.renderText('1. Player'), "yellow"))
+    print(colored(f.renderText('2. Players'), "yellow"))
+    player_mode = input(colored("Choose the game mode: ", "yellow"))
+    return player_mode
+
+
+def main_game():
+    # clear_screen()
+    # start_screen()
     player_names = None
-    player_mode = input(colored("Choose the game mode: [1] - one player, [2] - two players: ", "yellow"))
-    if player_mode == "2":
+    number_of_players = show_selecting_numbers_of_players()
+    while number_of_players not in ["1", "2"]:
+        number_of_players = show_selecting_numbers_of_players()
+    if number_of_players == "2":
         player_names = get_player_names()
 
     taken_word = []
     if player_names is not None:
-        taken_word.append(get_word(player_names[0]).lower())
+        taken_word.append(get_word_from_first_player(player_names[0]).lower())
     else:
         words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
         taken_word.append(r.choice(words))
