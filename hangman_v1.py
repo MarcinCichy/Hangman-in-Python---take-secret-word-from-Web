@@ -1,6 +1,8 @@
 import random as r
 import time
 import sys
+import requests
+from bs4 import BeautifulSoup
 from termcolor import colored, cprint
 from pyfiglet import Figlet
 from os import system, name
@@ -41,19 +43,19 @@ def get_letter():
         return user_letter.lower()
 
 
-def get_word():
-    """ Get a word from Player 2 """
-
-    word = input(colored("Enter the word for the other player to guess: ", "yellow"))
-    while not word.isalpha() or len(word) < 3:
-        sys.stdout.write("\033[F")
-        sys.stdout.write('\033[2K\033[1G')
-        print("\a")
-        word = input(colored(
-            "Invalid input! The word should only contain letters and be at least 3 characters long. Try again: ",
-            "yellow"))
-    else:
-        return word.lower()
+# def get_word():
+#     """ Get a word from Player 2 """
+#
+#     word = input(colored("Enter the word for the other player to guess: ", "yellow"))
+#     while not word.isalpha() or len(word) < 3:
+#         sys.stdout.write("\033[F")
+#         sys.stdout.write('\033[2K\033[1G')
+#         print("\a")
+#         word = input(colored(
+#             "Invalid input! The word should only contain letters and be at least 3 characters long. Try again: ",
+#             "yellow"))
+#     else:
+#         return word.lower()
 
 
 def take_word(num_of_players):
@@ -308,7 +310,7 @@ def get_player_names():
     return player1_name, player2_name
 
 
-def get_word_from_first_player(player_name):
+def get_word(player_name):
     """Get word from player"""
 
     return input(colored(f"{player_name}, enter a word to guess: ", "yellow"))
@@ -322,7 +324,7 @@ def goodbye():
     f = Figlet(font ="standard")
     print(colored(f.renderText('GOODBYE'), "magenta"))
     time.sleep(3)
-    return
+    #1return
 
 
 def end_game(wrong_answer):
@@ -365,7 +367,7 @@ def end_game(wrong_answer):
             main_game()
 
 
-def game_board(choosen_letters, hidden_word, wrong_answer, player_names):
+def game_board(chosen_letters, hidden_word, wrong_answer, player_names):
     """ Function shows the game board with all necessary elements """
 
     clear_screen()
@@ -379,7 +381,7 @@ def game_board(choosen_letters, hidden_word, wrong_answer, player_names):
     f = Figlet(font="standard")
     print(colored(f.renderText(hidden_word), "yellow"))
     print_gallows_and_hangman(wrong_answer)
-    print(" The letters You have already selected: ", choosen_letters[:])
+    print(" The letters You have already selected: ", chosen_letters[:])
 
 
 def show_selecting_numbers_of_players():
@@ -389,8 +391,19 @@ def show_selecting_numbers_of_players():
     print(colored(f.renderText('Choose number of players:'), "magenta"))
     print(colored(f.renderText('1. Player'), "yellow"))
     print(colored(f.renderText('2. Players'), "yellow"))
-    player_mode = input(colored("Choose the game mode: ", "yellow"))
+    player_mode = input(colored("Enter your choice: ", "yellow"))
     return player_mode
+
+
+def ask_for_difficulty_level():
+    clear_screen()
+    start_screen()
+    f = Figlet(font="digital")
+    print(colored(f.renderText('Choose difficulty level:'), "green"))
+    print(colored(f.renderText('e  Easy'), "green"))
+    print(colored(f.renderText('h  Hard'), "green"))
+    difficulty = input(colored("Enter your choice: ", "green"))
+    return difficulty
 
 
 def main_game():
@@ -404,22 +417,32 @@ def main_game():
         player_names = get_player_names()
 
     taken_word = []
-    if player_names is not None:
-        taken_word.append(get_word_from_first_player(player_names[0]).lower())
+    diff = ask_for_difficulty_level()
+    if diff == "e":
+        if player_names is not None:
+            taken_word.append(get_word(player_names[0]).lower())
+        else:
+            words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
+            taken_word.append(r.choice(words))
     else:
-        words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
-        taken_word.append(r.choice(words))
+        print ("dupa")
+        """ uzytkowniku o danym imieniu podaj adres strony www w celu wylosowania słowa do odgadnięcia
+        
+        to trzeba zrobić
+        """
+
+
     drawn_word = list(taken_word[0])
     hidden_word = ["_" for i in drawn_word]
-    choosen_letters = []
+    chosen_letters = []
     wrong_answer = 0
 
     # The while loop works as long as the hidden word differs from the drawn word and as long as the number of invalid letters is below 7.
     while wrong_answer != 7 and hidden_word != drawn_word:          
             
-        game_board(choosen_letters,hidden_word,wrong_answer, player_names)
+        game_board(chosen_letters,hidden_word,wrong_answer, player_names)
         letter = get_letter()
-        choosen_letters.append(letter)
+        chosen_letters.append(letter)
 
         if letter not in drawn_word:
             wrong_answer += 1
@@ -429,7 +452,7 @@ def main_game():
                 if letter == drawn_word[i]:
                     hidden_word[i] = letter
                 
-        game_board(choosen_letters, hidden_word, wrong_answer, player_names)
+        game_board(chosen_letters, hidden_word, wrong_answer, player_names)
     time.sleep(2)
     end_game(wrong_answer)
 
