@@ -3,6 +3,7 @@ import time
 import sys
 import requests
 from bs4 import BeautifulSoup
+from urllib.parse import urlparse
 from termcolor import colored, cprint
 from pyfiglet import Figlet
 from os import system, name
@@ -371,9 +372,9 @@ def game_board(chosen_letters, hidden_word, wrong_answer, player_names):
     """ Function shows the game board with all necessary elements """
 
     clear_screen()
-    f = Figlet(font ="standard")
+    f = Figlet(font="standard")
     print(colored(f.renderText("HANGMAN"), "green"))
-    f = Figlet(font ="digital")
+    f = Figlet(font="digital")
     if player_names is None:
         print(colored(f.renderText("       Don't get hunged"), "red"))
     else:
@@ -387,7 +388,7 @@ def game_board(chosen_letters, hidden_word, wrong_answer, player_names):
 def show_selecting_numbers_of_players():
     clear_screen()
     start_screen()
-    f = Figlet(font="digital")
+    f = Figlet(font="standard")
     print(colored(f.renderText('Choose number of players:'), "magenta"))
     print(colored(f.renderText('1. Player'), "yellow"))
     print(colored(f.renderText('2. Players'), "yellow"))
@@ -398,7 +399,7 @@ def show_selecting_numbers_of_players():
 def ask_for_difficulty_level():
     clear_screen()
     start_screen()
-    f = Figlet(font="digital")
+    f = Figlet(font="standard")
     print(colored(f.renderText('Choose difficulty level:'), "green"))
     print(colored(f.renderText('e  Easy'), "green"))
     print(colored(f.renderText('h  Hard'), "green"))
@@ -424,13 +425,24 @@ def main_game():
         else:
             words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
             taken_word.append(r.choice(words))
-    else:
-        print ("dupa")
-        """ uzytkowniku o danym imieniu podaj adres strony www w celu wylosowania słowa do odgadnięcia
-        
-        to trzeba zrobić
-        """
+    elif diff == "h":
+        url = input("Please enter the address of the website you want to draw the word from: ")
+        parsed_url = urlparse(url)
+        if parsed_url.scheme == '':
+            url = 'http://' + url
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        body = soup.find_all('body')
+        word_list = [word.get_text() for word in soup.find_all('p')]  # downloading all paragraphs and converting to a list of words
+        word_list = [word.get_text() for word in body]  # downloading all paragraphs and converting to a list of words
+        secret_word = r.choice(word_list)  # picking a random word from the list
+        taken_word.append(secret_word )
 
+        print(taken_word)
+        print(len(taken_word))
+        print(taken_word[0])
+        print(taken_word[1])
+        time.sleep(10)
 
     drawn_word = list(taken_word[0])
     hidden_word = ["_" for i in drawn_word]
@@ -440,7 +452,7 @@ def main_game():
     # The while loop works as long as the hidden word differs from the drawn word and as long as the number of invalid letters is below 7.
     while wrong_answer != 7 and hidden_word != drawn_word:          
             
-        game_board(chosen_letters,hidden_word,wrong_answer, player_names)
+        game_board(chosen_letters, hidden_word, wrong_answer, player_names)
         letter = get_letter()
         chosen_letters.append(letter)
 
