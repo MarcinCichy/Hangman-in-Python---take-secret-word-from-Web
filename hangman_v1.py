@@ -3,6 +3,7 @@ import time
 import sys
 import requests
 from bs4 import BeautifulSoup
+import string
 from urllib.parse import urlparse
 from termcolor import colored, cprint
 from pyfiglet import Figlet
@@ -34,7 +35,7 @@ def get_letter():
     """ Get a letter from Player """
 
     user_letter = input(colored(" Enter the letter You are guessing: ", "yellow"))
-    while (user_letter.isalpha()) != True or len(user_letter) !=1:                  # While loop checks if a letter is not a digits and it is only one
+    while (user_letter.isalpha()) is not True or len(user_letter) != 1:             # While loop checks if a letter is not a digits and it is only one
         sys.stdout.write("\033[F")                                                  # Clear to the end of line
         sys.stdout.write('\033[2K\033[1G')                                          # Erase and go to beginning of line
         print("\a")                                                                 # Plays sound from system buzzer
@@ -59,19 +60,19 @@ def get_letter():
 #         return word.lower()
 
 
-def take_word(num_of_players):
-    """ Takes a random word from the list and hides it """
-
-    pair = []                                                    # Empty list to use it later
-    words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
-    word = r.choice(words)  # Random word from the list
-    pair.append(word)  # Add the word to the list 'pair'
-    hidden_word = ["_" for i in word]        # List comprehension -> is beautiful !!!! -> change all characters with '_'
-    # It was before list comprehension -> bleeee ;)
-    # for i in range(len(word)):
-    #      hidden_word = hidden_word.replace(hidden_word[i],"_")
-    pair.append(hidden_word)  # Add the hidden_word to the list 'pair'
-    return pair               # Function can return only one parameter, so it return the list 'pair'
+# def take_word(num_of_players):
+#     """ Takes a random word from the list and hides it """
+#
+#     pair = []                                                    # Empty list to use it later
+#     words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
+#     word = r.choice(words)  # Random word from the list
+#     pair.append(word)  # Add the word to the list 'pair'
+#     hidden_word = ["_" for i in word]        # List comprehension -> is beautiful !!!! -> change all characters with '_'
+#     # It was before list comprehension -> bleeee ;)
+#     # for i in range(len(word)):
+#     #      hidden_word = hidden_word.replace(hidden_word[i],"_")
+#     pair.append(hidden_word)  # Add the hidden_word to the list 'pair'
+#     return pair               # Function can return only one parameter, so it return the list 'pair'
 
 
 def print_gallows_and_hangman(counter):
@@ -328,7 +329,7 @@ def goodbye():
     #1return
 
 
-def end_game(wrong_answer):
+def end_game(wrong_answer, secret_word):
     """The function shows the end screen and allows to choose whether the Player will play again or not """
     
     if wrong_answer == 7:
@@ -340,6 +341,9 @@ def end_game(wrong_answer):
                 f = Figlet(font="digital")
                 print(colored(f.renderText("     YOU HAVE LOST"), "red"))
                 print(colored(f.renderText("     AND YOU DANGLE"), "red"))
+                f = Figlet(font="standard")
+                print(colored(f.renderText("SECRET WORD IS: "), "yellow"))
+                print(colored(f.renderText(secret_word), "yellow"))
                 hanged(j)
                 time.sleep(0.15)
     else:
@@ -390,8 +394,8 @@ def show_selecting_numbers_of_players():
     start_screen()
     f = Figlet(font="standard")
     print(colored(f.renderText('Choose number of players:'), "magenta"))
-    print(colored(f.renderText('1. Player'), "yellow"))
-    print(colored(f.renderText('2. Players'), "yellow"))
+    print(colored(f.renderText('1.  Player'), "yellow"))
+    print(colored(f.renderText('2.  Players'), "yellow"))
     player_mode = input(colored("Enter your choice: ", "yellow"))
     return player_mode
 
@@ -401,15 +405,38 @@ def ask_for_difficulty_level():
     start_screen()
     f = Figlet(font="standard")
     print(colored(f.renderText('Choose difficulty level:'), "green"))
-    print(colored(f.renderText('e  Easy'), "green"))
-    print(colored(f.renderText('h  Hard'), "green"))
+    print(colored(f.renderText('e - easy'), "green"))
+    print(colored(f.renderText('h - hard'), "green"))
     difficulty = input(colored("Enter your choice: ", "green"))
     return difficulty
 
 
+def take_web_site(url):
+    # url = input("Please enter the address of the website you want to draw the word from: ")
+    parsed_url = urlparse(url)
+    if parsed_url.scheme == '':
+        url = 'http://' + url
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    body = soup.find('body')
+    if body is None:
+        return None
+    else:
+        # Remove special characters and break text into words
+        word_list = [word.strip(string.punctuation) for word in body.get_text().split()]
+        # Picking a random word from the list that is alphanumeric
+        valid_words = [word for word in word_list if word.isalnum()]
+        if valid_words:
+            rand_val_word = r.choice(valid_words)
+            print(rand_val_word)
+            time.sleep(10)
+            #  return r.choice(valid_words)
+            return rand_val_word
+        else:
+            return None
+
+
 def main_game():
-    # clear_screen()
-    # start_screen()
     player_names = None
     number_of_players = show_selecting_numbers_of_players()
     while number_of_players not in ["1", "2"]:
@@ -426,32 +453,25 @@ def main_game():
             words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
             taken_word.append(r.choice(words))
     elif diff == "h":
+        # taken_word.append(take_web_site())
         url = input("Please enter the address of the website you want to draw the word from: ")
-        parsed_url = urlparse(url)
-        if parsed_url.scheme == '':
-            url = 'http://' + url
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-        body = soup.find_all('body')
-        word_list = [word.get_text() for word in soup.find_all('p')]  # downloading all paragraphs and converting to a list of words
-        word_list = [word.get_text() for word in body]  # downloading all paragraphs and converting to a list of words
-        secret_word = r.choice(word_list)  # picking a random word from the list
-        taken_word.append(secret_word )
+        secret_word = take_web_site(url)
+        taken_word.append(secret_word)
+        while taken_word is None:
+            print("The alphanumeric word on the page could not be found.")
+            url = input("Enter a different address of the page from which you want to draw a word: ")
+            secret_word = take_web_site(url)
+            print(secret_word)
+            time.sleep(10)
+            taken_word.append(secret_word)
 
-        print(taken_word)
-        print(len(taken_word))
-        print(taken_word[0])
-        print(taken_word[1])
-        time.sleep(10)
-
-    drawn_word = list(taken_word[0])
+    drawn_word = list(taken_word[0].lower())  # When word is taken from website, change it to low characters
     hidden_word = ["_" for i in drawn_word]
     chosen_letters = []
     wrong_answer = 0
 
     # The while loop works as long as the hidden word differs from the drawn word and as long as the number of invalid letters is below 7.
-    while wrong_answer != 7 and hidden_word != drawn_word:          
-            
+    while wrong_answer != 7 and hidden_word != drawn_word:
         game_board(chosen_letters, hidden_word, wrong_answer, player_names)
         letter = get_letter()
         chosen_letters.append(letter)
@@ -466,7 +486,7 @@ def main_game():
                 
         game_board(chosen_letters, hidden_word, wrong_answer, player_names)
     time.sleep(2)
-    end_game(wrong_answer)
+    end_game(wrong_answer, secret_word)
 
 
 main_game()
