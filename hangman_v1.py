@@ -60,21 +60,6 @@ def get_letter():
 #         return word.lower()
 
 
-# def take_word(num_of_players):
-#     """ Takes a random word from the list and hides it """
-#
-#     pair = []                                                    # Empty list to use it later
-#     words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
-#     word = r.choice(words)  # Random word from the list
-#     pair.append(word)  # Add the word to the list 'pair'
-#     hidden_word = ["_" for i in word]        # List comprehension -> is beautiful !!!! -> change all characters with '_'
-#     # It was before list comprehension -> bleeee ;)
-#     # for i in range(len(word)):
-#     #      hidden_word = hidden_word.replace(hidden_word[i],"_")
-#     pair.append(hidden_word)  # Add the hidden_word to the list 'pair'
-#     return pair               # Function can return only one parameter, so it return the list 'pair'
-
-
 def print_gallows_and_hangman(counter):
     """ Prints gallows and hangman in ASCI code """
 
@@ -341,9 +326,10 @@ def end_game(wrong_answer, secret_word):
                 f = Figlet(font="digital")
                 print(colored(f.renderText("     YOU HAVE LOST"), "red"))
                 print(colored(f.renderText("     AND YOU DANGLE"), "red"))
-                f = Figlet(font="standard")
-                print(colored(f.renderText("SECRET WORD IS: "), "yellow"))
-                print(colored(f.renderText(secret_word), "yellow"))
+                if secret_word is not None:
+                    f = Figlet(font="digital")
+                    print(colored(f.renderText("THE SECRET WORD WAS: "), "yellow"))
+                    print(colored(f.renderText(secret_word), "yellow"))
                 hanged(j)
                 time.sleep(0.15)
     else:
@@ -393,7 +379,7 @@ def show_selecting_numbers_of_players():
     clear_screen()
     start_screen()
     f = Figlet(font="standard")
-    print(colored(f.renderText('Choose number of players:'), "magenta"))
+    print(colored(f.renderText('Number of players:'), "magenta"))
     print(colored(f.renderText('1.  Player'), "yellow"))
     print(colored(f.renderText('2.  Players'), "yellow"))
     player_mode = input(colored("Enter your choice: ", "yellow"))
@@ -404,7 +390,7 @@ def ask_for_difficulty_level():
     clear_screen()
     start_screen()
     f = Figlet(font="standard")
-    print(colored(f.renderText('Choose difficulty level:'), "green"))
+    print(colored(f.renderText('Difficulty level:'), "green"))
     print(colored(f.renderText('e - easy'), "green"))
     print(colored(f.renderText('h - hard'), "green"))
     difficulty = input(colored("Enter your choice: ", "green"))
@@ -427,13 +413,26 @@ def take_web_site(url):
         # Picking a random word from the list that is alphanumeric
         valid_words = [word for word in word_list if word.isalnum()]
         if valid_words:
-            rand_val_word = r.choice(valid_words)
-            print(rand_val_word)
-            time.sleep(10)
-            #  return r.choice(valid_words)
-            return rand_val_word
+            random_valid_word = r.choice(valid_words)
+            # print(random_valid_word)
+            # time.sleep(10)
+            return random_valid_word
         else:
             return None
+
+# def take_word(num_of_players):
+#     """ Takes a random word from the list and hides it """
+#
+#     pair = []                                                    # Empty list to use it later
+#     words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
+#     word = r.choice(words)  # Random word from the list
+#     pair.append(word)  # Add the word to the list 'pair'
+#     hidden_word = ["_" for i in word]        # List comprehension -> is beautiful !!!! -> change all characters with '_'
+#     # It was before list comprehension -> bleeee ;)
+#     # for i in range(len(word)):
+#     #      hidden_word = hidden_word.replace(hidden_word[i],"_")
+#     pair.append(hidden_word)  # Add the hidden_word to the list 'pair'
+#     return pair               # Function can return only one parameter, so it return the list 'pair'
 
 
 def main_game():
@@ -461,8 +460,6 @@ def main_game():
             print("The alphanumeric word on the page could not be found.")
             url = input("Enter a different address of the page from which you want to draw a word: ")
             secret_word = take_web_site(url)
-            print(secret_word)
-            time.sleep(10)
             taken_word.append(secret_word)
 
     drawn_word = list(taken_word[0].lower())  # When word is taken from website, change it to low characters
@@ -486,7 +483,7 @@ def main_game():
                 
         game_board(chosen_letters, hidden_word, wrong_answer, player_names)
     time.sleep(2)
-    end_game(wrong_answer, secret_word)
+    end_game(wrong_answer, taken_word[0])
 
 
 main_game()

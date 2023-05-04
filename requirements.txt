@@ -1,6 +1,8 @@
 art~=5.4
 termcolor~=2.2.0
 pyfiglet~=0.8.post1
+requests~=2.29.0
+beautifulsoup4~=4.12.2
 
 PyCharm:
 In "Run Configuration Settings", in section "Execution" set checkbox "Emulate terminal in output console"
