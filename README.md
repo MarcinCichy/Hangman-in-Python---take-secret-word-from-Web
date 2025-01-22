@@ -14,6 +14,7 @@
 - [Screenshots](#screenshots)
 - [Dependencies](#dependencies)
 - [Notes](#notes)
+- [License](#license)
 
 
 ## Introduction
@@ -111,10 +112,13 @@ The game relies on the following Python libraries:
 - **pyfiglet**: To create ASCII art text.
 
 Ensure all dependencies are installed by running:
-```bash
-pip install -r requirements.txt
+```
+ pip install -r requirements.txt
 ```
 
 ## Notes
 PyCharm:
 In "Run Configuration Settings", in section "Execution" set checkbox "Emulate terminal in output console"
+
+## License
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
