@@ -445,14 +445,13 @@ def main_game():
 
     taken_word = []
     diff = ask_for_difficulty_level()
-    if diff == "e":
+    if diff == "e":     # easy level
         if player_names is not None:
             taken_word.append(get_word(player_names[0]).lower())
         else:
             words = ("dom", "kot", "las", "java", "auto", "lawa", "python", "karoca", "zabawa", "komputer", "wisielec", "latawiec")
             taken_word.append(r.choice(words))
-    elif diff == "h":
-        # taken_word.append(take_web_site())
+    elif diff == "h":  # hard level
         url = input("Please enter the address of the website you want to draw the word from: ")
         secret_word = take_web_site(url)
         taken_word.append(secret_word)
